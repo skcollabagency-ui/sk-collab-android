@@ -193,11 +193,7 @@ public class NinjaOverlayService extends Service {
                     float dy = Math.abs(e.getRawY() - downY);
                     if (dx < dp(8) && dy < dp(8)
                             && System.currentTimeMillis() - downTime < 500) {
-                        Intent open = new Intent(
-                            NinjaOverlayService.this, MainActivity.class);
-                        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        startActivity(open);
+                        // Tap par chat open nahi hogi.
                     }
                     return true;
             }
