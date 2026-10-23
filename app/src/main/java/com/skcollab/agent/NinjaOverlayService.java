@@ -140,7 +140,7 @@ public class NinjaOverlayService extends Service {
 
 
 
-    prprivate class NinjaView extends View {
+    private class NinjaView extends View {
         private float downX, downY, startX, startY;
         private final java.util.Map<String, android.graphics.Bitmap[]> cache = new java.util.HashMap<>();
         private final android.graphics.Paint imagePaint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG | android.graphics.Paint.FILTER_BITMAP_FLAG);
