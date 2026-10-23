@@ -1,6 +1,10 @@
 package com.skcollab.agent;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -35,6 +39,45 @@ public class MainActivity extends Activity {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private SharedPreferences prefs;
 
+    private static final int NINJA_PERMISSION_REQUEST = 7842;
+
+    private void startNinjaIfAllowed() {
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) {
+            Intent permission = new Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName())
+            );
+            startActivityForResult(permission, NINJA_PERMISSION_REQUEST);
+            return;
+        }
+        startNinjaService();
+    }
+
+    private void startNinjaService() {
+        try {
+            Intent service = new Intent(this, NinjaOverlayService.class);
+            if (Build.VERSION.SDK_INT >= 26) startService(service);
+            else startService(service);
+        } catch (Exception e) {
+            Toast.makeText(this, "Ninja start nahi hua: " + e.getMessage(),
+                Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NINJA_PERMISSION_REQUEST) {
+            if (Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(this)) {
+                startNinjaService();
+            } else {
+                Toast.makeText(this,
+                    "Ninja ke liye Display over other apps permission zaroori hai",
+                    Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     private int dp(float value) {
         return (int)(value * getResources().getDisplayMetrics().density + 0.5f);
     }
@@ -50,6 +93,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
+        startNinjaIfAllowed();
         prefs = getSharedPreferences("agent_settings", MODE_PRIVATE);
 
         LinearLayout root = new LinearLayout(this);
@@ -133,10 +177,10 @@ public class MainActivity extends Activity {
         request("GET", "/health", null, result -> {
             if (result.optBoolean("ok")) {
                 status.setText("Connected • " + result.optString("service"));
-                addMessage("Agent", "Connection successful. Ab task bhej sakte hain.");
+                addMessage("Agent", "Connection successful. Ab task bhej sakte hain.");\n                NinjaOverlayService.setState(this, "success");
             } else {
                 status.setText("Connection failed");
-                addMessage("Error", result.optString("error", "Unknown error"));
+                addMessage("Error", result.optString("error", "Unknown error"));\n                NinjaOverlayService.setState(this, "error");
             }
         });
     }
@@ -149,9 +193,9 @@ public class MainActivity extends Activity {
             send.setEnabled(true);
             send.setText("Send");
             if (result.optBoolean("ok")) {
-                addMessage("Agent", result.optString("reply", "(Empty response)"));
+                addMessage("Agent", result.optString("reply", "(Empty response)"));\n                NinjaOverlayService.setState(this, "success");
             } else {
-                addMessage("Error", result.optString("error", "Request failed"));
+                addMessage("Error", result.optString("error", "Request failed"));\n                NinjaOverlayService.setState(this, "error");
             }
         });
     }
