@@ -177,10 +177,12 @@ public class MainActivity extends Activity {
         request("GET", "/health", null, result -> {
             if (result.optBoolean("ok")) {
                 status.setText("Connected • " + result.optString("service"));
-                addMessage("Agent", "Connection successful. Ab task bhej sakte hain.");\n                NinjaOverlayService.setState(this, "success");
+                addMessage("Agent", "Connection successful. Ab task bhej sakte hain.");
+                NinjaOverlayService.setState(this, "success");
             } else {
                 status.setText("Connection failed");
-                addMessage("Error", result.optString("error", "Unknown error"));\n                NinjaOverlayService.setState(this, "error");
+                addMessage("Error", result.optString("error", "Unknown error"));
+                NinjaOverlayService.setState(this, "error");
             }
         });
     }
@@ -193,9 +195,11 @@ public class MainActivity extends Activity {
             send.setEnabled(true);
             send.setText("Send");
             if (result.optBoolean("ok")) {
-                addMessage("Agent", result.optString("reply", "(Empty response)"));\n                NinjaOverlayService.setState(this, "success");
+                addMessage("Agent", result.optString("reply", "(Empty response)"));
+                NinjaOverlayService.setState(this, "success");
             } else {
-                addMessage("Error", result.optString("error", "Request failed"));\n                NinjaOverlayService.setState(this, "error");
+                addMessage("Error", result.optString("error", "Request failed"));
+                NinjaOverlayService.setState(this, "error");
             }
         });
     }
