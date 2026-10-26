@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: sk-assistant-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENABLE_SHEET_WRITE
+        value: "false"
+      - key: ENABLE_GMAIL_WRITE
+        value: "false"
